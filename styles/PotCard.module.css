@@ -1,0 +1,366 @@
+
+.btn {
+  background-color: #1e2128;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  place-self: center;
+  font-family: 'Nullshok';
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 20px;
+  cursor: pointer;
+  border-radius: 14.4px;
+  font-weight: bolder;
+  font-size: 1.5rem;
+  border: 2px solid white;
+}
+
+.recentWinnerTitle {
+  font-size: 1.5rem;
+  font-weight: bolder;
+  color: #fff;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.winner {
+  font-size: 1.5rem;
+  font-weight: bolder;
+  color: #fff;
+  text-align: center;
+  color: #f45358;
+}
+
+.textAccent {
+  color: #f45358;
+}
+
+.drawWinnerBtn {
+  background-color: #242833;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: 20%;
+  border: 1px solid #f2505e;
+  border-radius: 1.2rem;
+  padding: 10px 20px;
+  font-size: 1.3rem;
+  font-weight: bolder;
+  cursor: pointer;
+  color: #f2505e;
+}
+
+.upperdiv{
+  width: 100%;
+  min-height: 50px;
+  flex-direction: column;
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.divtwo{
+  width: 84%;
+  margin-left: 8vw;
+  background-color: #000;
+  height: 231.3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  overflow: hidden;
+  padding-left: 2vw;
+}
+
+.divthree{
+  padding-top: 2vh;
+}
+
+.divfour{
+  padding: 0;
+  width: 40vw;
+}
+
+@font-face{
+  font-family: 'Nullshok';
+  src: url('../font/nulshock/nulshock\ bd.otf')format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+.heading{
+  color: #FFB800;
+  font-family: 'Nullshok';
+font-size: 40.37px;
+font-weight: 700;
+line-height: 48.44px;
+text-align: left;
+padding: 0;
+margin-bottom: 0px;
+width: 48vw;
+}
+@font-face{
+  font-family: 'gz';
+  src: url('../font/zt-gatha/ZTGatha-SemiBold.otf')format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+.para{
+  color: white;
+  font-family: 'gz';
+font-size: 17.86px;
+line-height: 21.97px;
+text-align: left;
+width: 39vw;
+height: 43.75px;
+gap: 0px;
+opacity: 0px;
+margin-top: 1vh;
+font-weight: 100;
+}
+.image{
+  margin:0;
+  padding: 0;
+  top: 0;
+  width: 65vw;
+  height: auto;
+  transform: translate(-11%, -25%);
+
+}
+
+.platformstats{
+  margin-top: 10vh;
+  width: 100%;
+  min-height: 200px;
+  flex-direction: column;
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.innerstat{
+  width: 84%;
+  margin-left: 8vw;
+  height: 231.3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.statheading{
+  color: white;
+  font-family: 'Nullshok';
+}
+
+.infodiv{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.activeplayer{
+  border: 3px solid white;
+  width: 440.51px;
+height: 150.34px;
+top: 613.57px;
+left: 307px;
+gap: 0px;
+padding-left: 20px;
+border-radius: 10.83px;
+border: 3px 0px 0px 0px;
+opacity: 0px;
+color: white;
+
+}
+@font-face{
+  font-family: 'Oxanium';
+  src: url('../font/Oxanium/Oxanium-VariableFont_wght.ttf')format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.activeplayer h3 {
+  width: 220px;
+  border-bottom: 3px solid #FFB800;
+  padding: 5px;
+}
+.activeplayer div h3 {
+  font-size: 20.69px;
+  padding: 0;
+  font-family: 'gz';
+  margin: 0;
+  margin-top: 20px;
+}
+
+.activeplayer div h1 {
+  font-family: 'Oxanium';
+  margin-top: 10px;
+  font-size: 46px;
+  font-weight: 900;
+}
+
+.solanadiv{
+  display: flex;
+  flex-direction: row;
+  width: 190px;
+  height: auto;
+  gap: 1vw;
+}
+
+.solana {
+  margin-top: 15px;
+  color: #9945FF;
+  size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.outerinfodiv{
+  width: 84%;
+  margin-left: 8vw;
+  height: 200.3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  /* padding: 3vw; */
+  border: 3px solid #FFB800;
+  border-radius: 10.83px;
+}
+
+.interinfodiv{
+  display: flex;
+  flex-direction: row;
+  gap: 2vw;
+  margin-left: 3vw;
+  margin-right: 3vw;
+}
+
+.timediv div, .moneydiv div{
+  border: 2px solid #FFB800;
+  color: white;
+  height: 5vh;
+  width: 11vw;
+  padding: 1vw;
+  border-radius: 10.83px;
+}
+
+.timediv h3, .moneydiv h3, .depositbtn h3{
+  color: white;
+  font-family: 'gz';
+  margin: 0;
+  margin-bottom: 3px;
+  margin-top: 3px;
+  margin-left: 3px;
+  font-size: 15px;
+  font-weight: 100;
+}
+
+.timediv div h2, .moneydiv div h2, .depositbtn div h2{
+  font-family: 'Oxanium';
+  font-size: 20px;
+  color: white;
+  font-weight: 700px;
+}
+.timediv div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moneydiv div, .depositbtn div{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+
+.depositbtn div{
+  background: #9945FF;
+  border: 2px solid #9945FF;
+  height: 5vh;
+  width: 11vw;
+  padding: 1vw;
+  border-radius: 10.83px;
+  color: white;
+}
+
+.notdeclared{
+  height: 200.3px;
+  background: #FFB800;
+  opacity: 60%;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notdeclared h1{
+  color: #FFFFFF;
+  opacity: 1;
+  z-index: 3;
+  font-family: 'Oxanium';
+}
+
+
+
+@media only screen and (min-width: 360px) and (max-width: 943px) { 
+  .wrapper { width: 50%; }
+  .divtwo{
+    height: auto;
+    padding: 5px;
+
+  }
+  .divthree{
+    width: auto;
+    margin-left: 5px;
+    width: 90%;
+  }
+  .divfour{
+    display: none;
+  }
+  .heading{
+    margin-top: 0;
+    width: 90%;
+  }
+  .para{
+    width: 90%;
+    height: auto;
+    margin-left: 5px;
+  }
+  .platformstats, .innerstat{
+    height: auto;
+  }
+  .infodiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 80vw;
+    gap: 10px;
+  }
+  .activeplayer{
+    width: auto;
+  }
+  .solana{
+    margin: 20px;
+    width: 40px;
+    height: 40px;
+  }
+  .outerinfodiv, .interinfodiv{
+    height: auto;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  .timediv, .moneydiv, .timediv div, .moneydiv div, .depositbtn, .depositbtn div{
+    width: 200px;
+    height: auto;
+  }
+  .depositbtn div{
+    padding: 5px;
+  }
+ }

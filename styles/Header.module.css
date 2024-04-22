@@ -1,0 +1,105 @@
+@import url('https://fonts.cdnfonts.com/css/space-age');
+.wrapper {
+  width: 100%;
+  min-height: 100px;
+  color: #f1f1f3;
+  display: flex;
+  align-items: center;
+  padding: 8vw;
+  justify-content: space-between;
+  top: 0;
+  left: 308px;
+  /* overflow-x:hidden; */
+  /* overflow-y: hidden; */
+}
+@font-face{
+  font-family: 'spaceage';
+  src: url('../font/space-age-family/space-age.regular.ttf')format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}a
+
+.title {
+  margin-left: 20px;
+  font-size: 2rem;
+  cursor: pointer;
+  font-weight: bolder;
+  color: #f2505e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginBtn {
+  margin-right: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 1px solid #464c5a;
+  background-color: #3e4754;
+  border-radius: 1.5rem;
+  padding: 10px;
+  color: #f0f4fa;
+  font-weight: bolder;
+}
+
+.welcome {
+  font-size: 1rem;
+  font-weight: bolder;
+}
+
+.accentColor {
+  color: #f2505e;
+  font-weight: bold;
+}
+
+.logo {
+  width: 221px;
+  height: 25px;
+  top: 113.97px;
+  left: 308px;
+  gap: 0px;
+  opacity: 0px;
+  font-family: "spaceage";
+font-size: 26px;
+font-weight: 400;
+line-height: 25.35px;
+text-align: left;
+
+  color: white;
+
+}
+@font-face{
+  font-family: 'Oxanium';
+  src: url('../font/Oxanium/Oxanium-VariableFont_wght.ttf')format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.walletButton {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  font-family: "Oxanium";
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 100;
+}
+
+.walletIcon {
+  color: #FFB800;
+
+  margin-left: 0.5vw;
+}
+
+.teleicon{
+  width: 10vw;
+  display: flex;
+  justify-content: space-between;
+  height: 5vh;
+}
+
+.teleicon > svg {
+  width: 2vw;
+  height: auto;
+}
