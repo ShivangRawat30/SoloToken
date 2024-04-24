@@ -41,6 +41,8 @@ const PotCard = () => {
     isTransfered,
     tokenClaim,
     isAllowedForToken,
+    claimTokens,
+    ticketBought,
   } = useAppContext();
   // console.log(isMasterInitialized)
   if (!isMasterInitialized)
@@ -70,7 +72,7 @@ const PotCard = () => {
 
     if (startTime && windowTime) {
       intervalId = setInterval(() => {
-        const now = Date.now() - 19800;
+        const now = Date.now();
         const distance = Number(windowTime) * 1000 - now;
 
         // Calculate time left
@@ -118,9 +120,10 @@ const PotCard = () => {
     };
   }, [startTime, windowTime, endTime]);
 
-  // const now = new Date().getTime();
-  //       const distance =  Date.now();
-  //       console.log(distance, "ansd", now);
+  const now = new Date().getTime();
+  const win = Number(windowTime) * 1000 - now;
+  const end = Number(endTime) * 1000 - now;
+  const checkEnd = win < 0 || end < 0;
 
   const url =
     "https://s3-alpha-sig.figma.com/img/58a2/b48c/54df34d8c5f6e53b627991182652c733?Expires=1714348800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=QiawW2AaDSQKNVhWTO-GjJ~4XEf98WgAW9~LX3kp0c2v~9Dfb~ARbgYovFHwCOcNJV1zcuWXz16qXpgltdmIauYF8I7p-LlQv6ihYU~7CXC4AWLg5Y0iTH1VMO9kYhSytSTFhtr7uoGDETzhRW5sueMtwmaECgDcD8-akoezpuw3LB0T8VrQVgehDu5z4aExvoRRPryNjFvq-FfvtSp5RPTOqTEqCIvGFwFSezecUMISQNmcjPjIS0lNqMsfayVy1xLwMr~8YGCmUk8gmO-sf0BewUmDSIhcT4W~p-fHk0y~LeW6x3nsX9tXvHcfhS6EJqha9ig8jmR2SNjvM43pjQ__";
@@ -185,7 +188,7 @@ const PotCard = () => {
                 <h3>Timer Countdown</h3>
                 <div>
                   <h2>
-                    {timeLeft
+                    {timeLeft && win > 0 && end > 0
                       ? `${timeLeft.minutes} : ${timeLeft.seconds}`
                       : "00:00"}
                   </h2>
@@ -220,28 +223,31 @@ const PotCard = () => {
               <div className={style.moneydiv}>
                 <h3>Total Tickets</h3>
                 <div>
-                  <h2>
-                    {ticket && ticket.account.ticketPurchased
-                      ? ticket.account.ticketPurchased
-                      : "0"}
-                  </h2>
+                  <h2>{ticket && ticketBought ? ticketBought : "0"}</h2>
                   <SiSolana />
                 </div>
                 <h3>13.32</h3>
               </div>
               <div className={style.depositbtn}>
-                <h3>Deposit</h3>
-                <div
-                  onClick={() => {
-                    ticket && ticket.account.ticketPurchased
-                      ? buyMoreTicket()
-                      : buyTicket();
-                  }}
-                >
-                  <h2>0.1</h2>
-                  <SiSolana />
-                </div>
-                <h3>13.32</h3>
+                {lottery ? (
+                  <>
+                    <h3>Deposit</h3>
+                    <div
+                      onClick={() => {
+                        ticketBought && ticketBought > 0
+                          ? buyMoreTicket()
+                          : buyTicket();
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <h2>0.1</h2>
+                      <SiSolana />
+                    </div>
+                    <h3>13.32</h3>
+                  </>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </div>
@@ -259,83 +265,17 @@ const PotCard = () => {
               </div>
             </div>
           ) : (
-            <>
-              {canClaim ? (
-                <>
-                  <div className={style.platformstats}>
-                    <div
-                      className={style.outerinfodiv}
-                      style={{ justifyContent: "center", width: "84%" }}
-                    >
-                      <div
-                        className={style.interinfodiv}
-                        style={{ justifyContent: "center" }}
-                      >
-                        <div className={style.depositbtn}>
-                          <h3>Congratulations</h3>
-                          <div
-                            onClick={() => {
-                              claimPrize();
-                            }}
-                          >
-                            <h2>Claim Prize </h2>
-                            <SiSolana />
-                          </div>
-                          <h3>
-                            {Number(lottery.totalAmount) / 1000000000} Sol
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {!isTransfered ? (
-                    <>
-                      <div className={style.platformstats}>
-                        <div
-                          className={style.outerinfodiv}
-                          style={{ justifyContent: "center", width: "84%" }}
-                        >
-                          <div
-                            className={style.interinfodiv}
-                            style={{ justifyContent: "center" }}
-                          >
-                            <div className={style.depositbtn}>
-                              <h3>Congratulations</h3>
-                              <div
-                                onClick={() => {
-                                  transferToken();
-                                }}
-                              >
-                                <h2>Claim Token</h2>
-                                <SiSolana />
-                              </div>
-                              <h3>
-                                {Number(lottery.totalAmount) / 1000000000} Sol
-                              </h3>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className={style.platformstats}>
-                      <div className={style.outerinfodiv}>
-                        <div className={style.notdeclared}>
-                          <h1>Please Wait until Game Tokens are available</h1>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </>
+            <div className={style.platformstats}>
+              <div className={style.outerinfodiv}>
+                <div className={style.notdeclared}>
+                  <h1>Please Wait until New Game Starts</h1>
+                </div>
+              </div>
+            </div>
           )}
         </>
       ) : (
-        <> </>
+        <></>
       )}
 
       {connected && isMasterAuthority && (
@@ -347,31 +287,53 @@ const PotCard = () => {
             <div className={style.interinfodiv}>
               <div className={style.timediv} onClick={createLottery}>
                 <h3> </h3>
-                <div>
+                <div style={{ cursor: "pointer" }}>
                   <h2>Create Lottery</h2>
                 </div>
               </div>
-              {lottery && !isFinished &&(
-                <div className={style.timediv} onClick={pickWinner}>
+              {lottery && checkEnd && (
+                <div className={style.timediv}>
                   <h3> </h3>
-                  <div>
+                  <div style={{ cursor: "pointer" }} onClick={pickWinner}>
                     <h2>Pick Winner</h2>
                   </div>
                 </div>
               )}
-              {isFinished && (
-                <div className={style.timediv}>
-                  <h3> </h3>
+              {lottery &&
+                checkEnd &&
+                lottery.winnerId === lottery.lastBoughtId && (
                   <div
-                    style={{ width: "auto" }}
+                    className={style.timediv}
                     onClick={() => {
-                      transferToken();
+                      claimPrize();
                     }}
                   >
-                    <h2>Transfer Tokens</h2>
+                    <h3> </h3>
+                    <div
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        claimPrize();
+                      }}
+                    >
+                      <h2>Give Prize</h2>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              {lottery &&
+                checkEnd &&
+                Number(lottery.winnerId) === 4294967295 && (
+                  <div className={style.timediv}>
+                    <h3></h3>
+                    <div
+                      style={{ width: "auto", cursor: "pointer" }}
+                      onClick={() => {
+                        transferToken();
+                      }}
+                    >
+                      <h2>Transfer Tokens</h2>
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </div>

@@ -5,5 +5,5 @@ export const LOTTERY_SEED = "lottery";
 export const TICKET_SEED = "ticket";
 
 export const PROGRAM_ID = new PublicKey(
-  "FEx31QCCTX7mUgQCWRZfWPwKe7DhUFAUZUvT8K2m6on8"
+  "3UJvN3nzxEf2oDbYPVXwse2rPpzVXKBunaLf8hbqrFga"
 );

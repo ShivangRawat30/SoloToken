@@ -60,46 +60,11 @@
       "name": "claimPrize",
       "accounts": [
         { "name": "lottery", "isMut": true, "isSigner": false },
-        { "name": "ticket", "isMut": true, "isSigner": false },
         { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "winner", "isMut": true, "isSigner": false },
         { "name": "systemProgram", "isMut": false, "isSigner": false }
       ],
-      "args": [
-        { "name": "lotteryId", "type": "u32" },
-        { "name": "ticketId", "type": "u32" }
-      ]
-    },
-    {
-      "name": "transferTokens",
-      "accounts": [
-        { "name": "lottery", "isMut": true, "isSigner": false },
-        { "name": "tokenOwner", "isMut": true, "isSigner": false },
-        { "name": "from", "isMut": false, "isSigner": true },
-        { "name": "fromAta", "isMut": true, "isSigner": false },
-        { "name": "toAta", "isMut": true, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
-      ],
-      "args": [
-        { "name": "lotteryId", "type": "u32" },
-        { "name": "amount", "type": "u64" }
-      ]
-    },
-    {
-      "name": "claimTokens",
-      "accounts": [
-        { "name": "lottery", "isMut": true, "isSigner": false },
-        { "name": "ticket", "isMut": true, "isSigner": false },
-        { "name": "authority", "isMut": false, "isSigner": true },
-        { "name": "fromAta", "isMut": true, "isSigner": false },
-        { "name": "toAta", "isMut": true, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
-      ],
-      "args": [
-        { "name": "lotteryId", "type": "u32" },
-        { "name": "ticketId", "type": "u32" }
-      ]
+      "args": [{ "name": "lotteryId", "type": "u32" }]
     }
   ],
   "accounts": [
@@ -144,7 +109,8 @@
           { "name": "id", "type": "u32" },
           { "name": "lotteryId", "type": "u32" },
           { "name": "authority", "type": "publicKey" },
-          { "name": "ticketPurchased", "type": "u32" }
+          { "name": "ticketPurchased", "type": "u32" },
+          { "name": "tokenClaimed", "type": "bool" }
         ]
       }
     }

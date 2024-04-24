@@ -5,29 +5,28 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   Keypair,
+  Transaction,
 } from "@solana/web3.js";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 import bs58 from "bs58";
-import { env } from "process";
-import TOKEN_PROGRAM_ID, {
-  createAssociatedTokenAccount,
-  createAssociatedTokenAccountIdempotent,
-  getAccount,
-  getAssociatedTokenAddress,
+import {
+  createTransferInstruction,
   getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
+import "dotenv/config";
 
 import {
   getLotteryAddress,
   getMasterAddress,
   getProgram,
   getTicketAddress,
-  getTotalPrize,
-  lotteryAssociateTokenAccount,
 } from "../utils/program";
 import { confirmTx, mockWallet } from "../utils/helper";
 import toast from "react-hot-toast";
-
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
@@ -50,11 +49,12 @@ export const AppProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [lotteryTotalDeposit, setLotteryTotalDeposit] = useState();
   const [success, setSuccess] = useState("");
+  const [keyPair, setKeyPair] = useState();
   const [intialized, setIntialized] = useState(false);
 
   // Get provider
   const { connection } = useConnection();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const program = useMemo(() => {
     if (connection) {
       return getProgram(connection, wallet ?? mockWallet());
@@ -112,8 +112,10 @@ export const AppProvider = ({ children }) => {
         { memcmp: { bytes: wallet.publicKey.toBase58(), offset: 16 } },
       ]);
       setTicketBought(userTickets[0].account.ticketPurchased);
+      console.log(ticketBought, ticket);
       setTicket(userTickets[0]);
-      setMyTicketAddress(ticket.publicKey);
+      setMyTicketId(userTickets[0].account.id);
+      setMyTicketAddress(userTickets[0].publicKey);
 
       const val = 4294967295;
       // Check whether any of the user tickets win
@@ -181,18 +183,15 @@ export const AppProvider = ({ children }) => {
   const buyTicket = async () => {
     setError("");
     setSuccess("");
-    let now = new Date().getTime();
-    if (
-      now >= Number(lottery.windowTime) * 10000 &&
-      lottery.windowTime != null &&
-      now >= Number(lottery.endTime) * 1000 &&
-      lottery.windowTime != null
-    ) {
-      setError("Cannot Enter the lottery");
-      toast.error("Cannot Enter the lottery");
-    } else if (lottery.winnerId) {
+    const now = new Date().getTime();
+    const win = Number(windowTime) * 1000 - now;
+    const end = Number(endTime) * 1000 - now;
+    if (lottery.winnerId) {
       setError("Winner Already Exists");
       toast.error("Winner Already Exists");
+    } else if ((win < 0 || end < 0) && windowTime && endTime) {
+      setError("Lottery has ended");
+      toast.error("Lottery has ended");
     } else {
       try {
         console.log("BUYING");
@@ -224,18 +223,16 @@ export const AppProvider = ({ children }) => {
   const buyMoreTicket = async () => {
     setError("");
     setSuccess("");
-    let now = new Date().getTime();
-    if (
-      now >= Number(lottery.windowTime) * 10000 &&
-      lottery.windowTime != null &&
-      now >= Number(lottery.endTime) * 1000 &&
-      lottery.windowTime != null
-    ) {
-      setError("Cannot Enter the lottery");
-      toast.error("Cannot Enter the lottery");
-    } else if (lottery.winnerId) {
+    console.log(myTicketId, myTicketAdress);
+    const now = new Date().getTime();
+    const win = Number(windowTime) * 1000 - now;
+    const end = Number(endTime) * 1000 - now;
+    if (lottery.winnerId) {
       setError("Winner Already Exists");
       toast.error("Winner Already Exists");
+    } else if ((win < 0 || end < 0) && windowTime && endTime) {
+      setError("Lottery has ended");
+      toast.error("Lottery has ended");
     } else {
       try {
         console.log("buying More Ticket");
@@ -266,7 +263,7 @@ export const AppProvider = ({ children }) => {
     const now = new Date().getTime();
     const windowDifference = Number(lottery.windowTime) * 10000 - now;
     const endDifference = Number(lottery.endTime) * 10000 - now;
-    if (windowDifference > 0 || endDifference > 0) {
+    if (windowDifference < 0 || endDifference < 0) {
       setError("Lottery is not ended");
       toast.error("Lottery is not ended");
     } else if (lottery.winnerId) {
@@ -274,6 +271,7 @@ export const AppProvider = ({ children }) => {
       toast.error("Winner Already Exists");
     } else {
       try {
+        console.log(lotteryId, currlotteryAddress, wallet.publicKey);
         const txHash = await program.methods
           .pickWinner(lotteryId)
           .accounts({
@@ -282,10 +280,10 @@ export const AppProvider = ({ children }) => {
           })
           .rpc();
         await confirmTx(txHash, connection);
-
         updateState();
         toast.success("Picked winner!");
       } catch (err) {
+        console.error(err.message);
         setError(err.message);
         toast.error(err.message);
       }
@@ -293,15 +291,26 @@ export const AppProvider = ({ children }) => {
   };
 
   const claimPrize = async () => {
+    console.log("claimPrize");
     setError("");
     setSuccess("");
-
     try {
+      const ticketAddres = await getTicketAddress(
+        currlotteryAddress,
+        lottery.winnerId
+      );
+      const ticket = await program.account.ticket.fetch(ticketAddres);
+      console.log(
+        lotteryId,
+        ticket.authority,
+        currlotteryAddress,
+        wallet.publicKey
+      );
       const txHash = await program.methods
-        .claimPrize(lotteryId, userWinningId)
+        .claimPrize(lotteryId)
         .accounts({
           lottery: currlotteryAddress,
-          ticket: myTicketAdress,
+          winner: ticket.authority,
           authority: wallet.publicKey,
           systemProgram: SystemProgram.programId,
         })
@@ -314,101 +323,76 @@ export const AppProvider = ({ children }) => {
       toast.error(err.message);
     }
   };
+  const initializeKeypair = () => {
+    const privateKey = new Uint8Array(bs58.decode(process.env.SECRET_KEY));
+    const keypair = Keypair.fromSecretKey(privateKey);
+    console.log(
+      `Initialized Keypair: Public Key - ${keypair.publicKey.toString()}`
+    );
 
-  const transferToken = async () => {
-    setError("");
-    setSuccess("");
-
-    const TokenPone = new PublicKey(
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-    );
-    const TokenPtwo = new PublicKey(
-      "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
-    );
-    const fromATA = new PublicKey(
-      "Hsjbftz2xXRnGk7q7WsrYUfuDod8XWaSvxb1ome9j8ZZ"
-    );
-    const tokenOWN = new PublicKey(
-      "EbkQ2uzFzvobU7C4ZBZHP3hS6PTdQRreL4CXztDJfMxR"
-    );
-    // const fromAta = await lotteryAssociateTokenAccount(connection, wallet, mintAddress, wallet.publicKey);
-    // console.log(fromAta.address.toString());
-    console.log(connection);
-    const to = new PublicKey("Dqd3X5DY6m3sJw6u2y7BHVBco27V2xCD9gbZ7bEJwrFe");
-    const mintAddress = new PublicKey(
-      "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
-    );
-    console.log(connection, wallet, mintAddress, wallet.publicKey);
-    const toAta = await getOrCreateAssociatedTokenAccount(
-      connection,
-      wallet,
-      mintAddress,
-      wallet.publicKey,
-    );
-    const amount = 10;
-    console.log(toAta);
-    try {
-      const txHash = await program.methods
-        .transferTokens(lotteryId, amount)
-        .accounts({
-          lottery: master.lastId,
-          tokenOwner: tokenOWN,
-          from: wallet,
-          fromAta: fromATA,
-          toAta: toAta,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        })
-        .rpc();
-      await confirmTx(txHash, connection);
-      updateState();
-      setTokenTransfered(true);
-      toast.success("Token has been Transferred to the lottery");
-    } catch (err) {
-      setError(err.message);
-      toast.error(err);
-    }
+    return keypair;
   };
 
-  const claimTokens = async () => {
+  const transferToken = async () => {
+    console.log("transferToken");
     setError("");
     setSuccess("");
-    const mintAddress = new PublicKey(
-      "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
-    );
-    const fromATA = new PublicKey(
-      "Hsjbftz2xXRnGk7q7WsrYUfuDod8XWaSvxb1ome9j8ZZ"
-    );
-    const toAta = getOrCreateAssociatedTokenAccount(
+    const ac = initializeKeypair();
+    const fromATA = new PublicKey(process.env.FROM_ASSOCIATED_TOKEN_ACCOUNT);
+    const mintAddress = new PublicKey(process.env.MINT_ID);
+    const toAta = await getOrCreateAssociatedTokenAccount(
       connection,
-      wallet,
+      ac,
       mintAddress,
-      wallet.publicKey
+      currlotteryAddress,
+      true
     );
-    if (token.account.claimed) {
-      setError("Already Claimed");
-      toast.error("Already Claimed");
-    } else {
-      try {
-        const txHash = await program.methods
-          .claimTokens(lotteryId, myTicketId)
-          .accounts({
-            lottery: master.lastId,
-            ticket: myTicketId,
-            authority: wallet.publicKey,
-            from_ata: fromATA,
-            to_ata: toAta,
-            token_program: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-          })
-          .rpc();
-        await confirmTx(txHash, connection);
-        updateState();
-        toast.success("Token has been received");
-      } catch (err) {
-        setError(err.message);
-        toast.error(err.message);
+    // const amount = new BN(40);
+    console.log(toAta.address.toBase58());
+    console.log(fromATA, wallet.publicKey);
+    try {
+      const it = lottery.lastTicketId;
+      console.log(it);
+      const instructions = [];
+      for (let i = 1; i <= it; i++) {
+        const currTicket = await getTicketAddress(currlotteryAddress, i);
+        const Ata = await getOrCreateAssociatedTokenAccount(
+          connection,
+          ac,
+          mintAddress,
+          currTicket,
+          true
+        );
+
+        const tx = new Transaction();
+        tx.add(
+          createTransferInstruction(
+            fromATA,
+            Ata.address,
+            wallet.publicKey,
+            10000
+          )
+        );
+        instructions.push(tx);
       }
+
+      const block = await connection.getLatestBlockhash();
+      instructions.forEach((ta) => {
+        ta.recentBlockhash = block.blockhash;
+        ta.feePayer = wallet.publicKey;
+      });
+      console.log(instructions, wallet.publicKey.toBase58);
+      const signedTransaction = await wallet.signAllTransactions(instructions);
+      console.log(
+        "user has signed " + signedTransaction.length + " transactions"
+      );
+      updateState();
+      setTokenTransfered(true);
+      toast.success("Token has been Transferred to the users");
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      toast.error(err);
     }
   };
 
@@ -418,9 +402,17 @@ export const AppProvider = ({ children }) => {
         isMasterInitialized: intialized,
         connected: wallet?.publicKey ? true : false,
         isMasterAuthority:
-          wallet && master && wallet.publicKey.equals(master.authority),
+          wallet?.publicKey &&
+          master &&
+          wallet?.publicKey.toBase58() === master.authority.toBase58()
+            ? true
+            : false,
         isLotteryAuthority:
-          wallet && lottery && wallet.publicKey.equals(master.authority),
+          wallet?.publicKey &&
+          lottery &&
+          wallet?.publicKey.toBase58() === master.authority.toBase58()
+            ? true
+            : false,
         lotteryId,
         lotteryPlayers,
         startTime,
@@ -428,7 +420,7 @@ export const AppProvider = ({ children }) => {
         endTime,
         tokenClaim: ticket && ticket.account.tokenClaimed === false,
         isFinished: lottery && lottery.winnerId,
-        canClaim: lottery && !lottery.claimed && userWinningId === myTicketId,
+        canClaim: lottery && !lottery.claimed,
         isTransfered:
           lottery &&
           !lottery.claimed &&
@@ -452,6 +444,7 @@ export const AppProvider = ({ children }) => {
         lottery,
         ticket,
         lotteryTotalDeposit,
+        ticketBought,
       }}
     >
       {children}

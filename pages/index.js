@@ -10,6 +10,7 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
+import "dotenv/config";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 
@@ -37,6 +38,7 @@ export default function Home() {
         <WalletModalProvider>
           <AppProvider>
             <div className={style.wrapper}>
+              <title>Solo Token</title>
               <Header />
               <PotCard />
               {/* <Table /> */}
